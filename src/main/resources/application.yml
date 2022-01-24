@@ -2,3 +2,7 @@ spring:
   batch:
     job:
       enabled: false
+
+logging:
+  level:
+    batch.examples: debug
