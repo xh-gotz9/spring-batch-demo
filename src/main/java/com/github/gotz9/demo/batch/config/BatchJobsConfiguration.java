@@ -10,6 +10,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.List;
 import java.util.Random;
@@ -48,17 +49,27 @@ public class BatchJobsConfiguration {
         }
 
         Step step() {
+            // Simply, create a new Executor here. Maybe we should use a
+            // commons executor component in application
+            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+            executor.setCorePoolSize(4);
+            executor.setMaxPoolSize(4);
+            executor.initialize();
+
             return stepBuilderFactory.get("example-1-step-1")
                     // chunk will let Step read items into chunk, and process chunks,
                     // then loop from read step.
                     .<Long, Void>chunk(2)
                     .reader(reader())
                     .processor((Function<? super Long, ? extends Void>) item -> {
-                        logger.debug("processing item {}", item);
+                        logger.debug("processing item {} in thread {}", item, Thread.currentThread().getName());
                         return null;
                     })
                     .writer(items -> {
                     })
+                    // we can use an multi-thread task executor to
+                    // process chunk in parallel
+                    .taskExecutor(executor)
                     .build();
         }
 
