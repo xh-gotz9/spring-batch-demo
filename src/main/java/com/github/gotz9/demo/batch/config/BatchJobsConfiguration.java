@@ -28,6 +28,9 @@ public class BatchJobsConfiguration {
         this.stepBuilderFactory = stepBuilderFactory;
     }
 
+    /**
+     * A simple one step job configuration
+     */
     @Configuration
     class Example1JobConfiguration {
 
@@ -46,6 +49,8 @@ public class BatchJobsConfiguration {
 
         Step step() {
             return stepBuilderFactory.get("example-1-step-1")
+                    // chunk will let Step read items into chunk, and process chunks,
+                    // then loop from read step.
                     .<Long, Void>chunk(2)
                     .reader(reader())
                     .processor((Function<? super Long, ? extends Void>) item -> {
