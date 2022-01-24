@@ -2,6 +2,17 @@ spring:
   batch:
     job:
       enabled: false
+  datasource:
+    url: jdbc:mysql://localhost/demo?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: root
+
+app:
+  datasource:
+    h2:
+      url: jdbc:h2:mem:demo
+      username: sa
+      password:
 
 logging:
   level:
