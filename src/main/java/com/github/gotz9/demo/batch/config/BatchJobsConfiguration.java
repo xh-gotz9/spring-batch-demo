@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -45,7 +46,9 @@ public class BatchJobsConfiguration {
 
             logger.debug("generated items for reader: {}", items);
 
-            return new ListItemReader<>(items);
+            // reader will be called concurrently, use synchronized collection
+            // to make sure read is safety
+            return new ListItemReader<>(Collections.synchronizedList(items));
         }
 
         Step step() {
